@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FactureFacile</title>
+<style>
+:root{--p:#6366f1;--p2:#8b5cf6;--bg:#f6f7fb;--s:#fff;--t:#0f172a;--m:#64748b;--b:#e2e8f0;--ok:#10b981;--bad:#ef4444;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1020;--s:#141b2d;--t:#e2e8f0;--m:#94a3b8;--b:#263149;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--t)}
+a{color:var(--p)}
+h1{font-size:24px;margin:0 0 2px}h3{margin:0}
+.btn{font:inherit;cursor:pointer;border:1px solid var(--b);background:var(--s);color:var(--t);padding:9px 16px;border-radius:10px;text-decoration:none;display:inline-block;transition:.15s}
+.btn:hover{filter:brightness(.97)}
+.btn-p{background:linear-gradient(135deg,var(--p),var(--p2));border:0;color:#fff;box-shadow:0 6px 18px -8px var(--p)}
+.btn-d{color:var(--bad)}
+.btn-s{padding:5px 11px;font-size:13px;border-radius:8px}
+input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--b);border-radius:10px;background:var(--bg);color:var(--t);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px #6366f133}
+label{display:block;font-size:13px;color:var(--m);margin:0 0 5px;font-weight:500}
+.f{margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 1px 2px #0000000a}
+.tblw{overflow-x:auto;background:var(--s);border:1px solid var(--b);border-radius:16px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--b);font-size:14px;white-space:nowrap}
+th{color:var(--m);font-weight:500;font-size:13px}
+tr:last-child td{border-bottom:0}
+td input{padding:7px 9px}
+.badge{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-brouillon{background:#e2e8f0;color:#334155}.st-envoyee{background:#dbeafe;color:#1d4ed8}.st-payee{background:#d1fae5;color:#047857}.st-retard{background:#fee2e2;color:#b91c1c}
+.empty{text-align:center;color:var(--m);padding:40px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tot{margin-left:auto;max-width:300px;margin-top:14px}
+.tot div{display:flex;justify-content:space-between;padding:4px 0}
+.tot .big{font-weight:700;font-size:17px;border-top:1px solid var(--b);margin-top:6px;padding-top:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--b)}
+.row:last-child{border-bottom:0}
+.sub{font-size:13px;color:var(--m)}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin:6px 0}
+.app{display:flex;min-height:100vh}
+.side{width:248px;background:var(--s);border-right:1px solid var(--b);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{font-weight:800;font-size:19px;padding:6px 12px 20px;background:linear-gradient(135deg,var(--p),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;color:var(--m);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--bg);color:var(--t)}
+.nav a.on{background:linear-gradient(135deg,#6366f122,#8b5cf622);color:var(--p)}
+.who{margin-top:auto;padding:12px;font-size:14px;color:var(--t)}
+.main{flex:1;padding:30px;min-width:0;max-width:1120px}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 20% 10%,#6366f133,transparent 45%),radial-gradient(circle at 80% 90%,#8b5cf633,transparent 45%),var(--bg)}
+.auth .card{width:100%;max-width:410px;padding:34px;margin:0;box-shadow:0 30px 60px -30px #0f172a55}
+.modal-bg{position:fixed;inset:0;background:#0f172a80;backdrop-filter:blur(4px);display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:24px;z-index:20}
+.modal{background:var(--s);color:var(--t);border-radius:18px;padding:24px;width:100%;max-width:820px;box-shadow:0 30px 60px -20px #0009}
+.inv{background:#fff;color:#111;padding:34px;border-radius:12px}
+.inv table{width:100%}.inv th,.inv td{color:#111;border-bottom:1px solid #e5e7eb}
+.hidden{display:none!important}
+@media(max-width:820px){
+  .app{flex-direction:column}
+  .side{position:static;width:auto;height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid var(--b)}
+  .logo{padding:0 10px 0 4px;white-space:nowrap}
+  .nav{flex-direction:row}.nav a{white-space:nowrap;padding:8px 10px}
+  .who{display:none}.main{padding:18px}.g2{grid-template-columns:1fr}
+}
+@media print{
+  .side,.main,.noprint{display:none!important}
+  .modal-bg{position:absolute;background:none;backdrop-filter:none;padding:0;display:block}
+  .modal{box-shadow:none;max-width:none;padding:0;background:#fff}
+  .inv{padding:0}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="modal-bg hidden" id="mbg"><div class="modal" id="mbody"></div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur = n => Number(n).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+const round = n => Math.round(n * 100) / 100;
+const today = () => new Date().toISOString().slice(0, 10);
+const addDays = (d, n) => { const x = new Date(d + 'T00:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+const fdate = s => s ? new Date(s + 'T00:00:00').toLocaleDateString('fr-FR') : '';
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+const salt = () => [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
+async function hash(pw, s) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s + ':' + pw));
+  return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+/* Stockage (repli en mémoire si le navigateur bloque localStorage) */
+const mem = {};
+const S = {
+  get: k => { try { return localStorage.getItem(k); } catch (e) { return mem[k] ?? null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { mem[k] = v; } },
+  del: k => { try { localStorage.removeItem(k); } catch (e) { delete mem[k]; } }
+};
+const J = (k, d) => { try { return JSON.parse(S.get(k)) ?? d; } catch (e) { return d; } };
+const W = (k, v) => S.set(k, JSON.stringify(v));
+
+const AUTH = ['login', 'register'];
+const PAGES = { dashboard: ['📊', 'Tableau de bord'], invoices: ['🧾', 'Factures'], new: ['➕', 'Nouvelle facture'], clients: ['👥', 'Clients'], account: ['👤', 'Mon compte'] };
+const LABEL = { brouillon: 'Brouillon', envoyee: 'Envoyée', payee: 'Payée', retard: 'En retard' };
+
+let me = null, data = null, ed = null, editId = null, preClient = null;
+
+function loadSession() {
+  const email = S.get('ff-session');
+  const u = J('ff-users', {})[email];
+  if (!u) { me = null; data = null; return; }
+  me = u;
+  data = J('ff-data:' + email, {});
+  data.company = data.company || {};
+  data.clients = data.clients || [];
+  data.invoices = data.invoices || [];
+  data.seq = data.seq || 0;
+}
+const saveData = () => W('ff-data:' + me.email, data);
+
+/* Calculs */
+function totals(inv) {
+  const ht = round(inv.lines.reduce((s, l) => s + (+l.qty || 0) * (+l.price || 0), 0));
+  const tva = round(ht * (parseFloat(inv.tva) || 0) / 100);
+  return { ht, tva, ttc: round(ht + tva) };
+}
+const stOf = inv => (inv.status === 'envoyee' && inv.due && inv.due < today()) ? 'retard' : inv.status;
+const badge = inv => { const s = stOf(inv); return `<span class="badge st-${s}">${LABEL[s]}</span>`; };
+const kpi = (l, v, c) => `<div class="card" style="border-top:3px solid ${c};margin:0"><div class="sub">${l}</div><div style="font-size:24px;font-weight:700;margin-top:6px">${eur(round(v))}</div></div>`;
+
+/* Routage */
+const go = p => { location.hash = p; };
+function render() {
+  const r = location.hash.slice(1);
+  if (!me) {
+    if (!AUTH.includes(r)) return go('login');
+    return renderAuth(r);
+  }
+  if (AUTH.includes(r) || !(PAGES[r] || r === 'edit')) return go('dashboard');
+  if (r === 'edit' && !editId) return go('invoices');
+  renderApp(r);
+}
+
+/* Authentification */
+function renderAuth(r) {
+  const reg = r === 'register';
+  $('#root').innerHTML = `
+    <div class="auth"><div class="card">
+      <div class="logo" style="font-size:26px;text-align:center;margin-bottom:4px">FactureFacile</div>
+      <p style="text-align:center;color:var(--m);margin:0 0 22px">${reg ? 'Créez votre compte pour commencer' : 'Connectez-vous à votre espace'}</p>
+      <form id="authf" novalidate>
+        ${reg ? `<div class="f"><label>Votre nom ou nom d'entreprise</label><input name="name" autocomplete="name"></div>` : ''}
+        <div class="f"><label>E-mail</label><input name="email" type="email" autocomplete="email"></div>
+        <div class="f"><label>Mot de passe (8 caractères min.)</label><input name="pw" type="password" autocomplete="${reg ? 'new-password' : 'current-password'}"></div>
+        <div class="err" id="err"></div>
+        <button class="btn btn-p" style="width:100%;padding:12px" type="submit">${reg ? 'Créer mon compte' : 'Se connecter'}</button>
+      </form>
+      <p style="text-align:center;margin:18px 0 0;color:var(--m);font-size:14px">
+        ${reg ? 'Déjà inscrit ? <a href="#login">Se connecter</a>' : 'Pas encore de compte ? <a href="#register">Créer un compte</a>'}
+      </p>
+    </div></div>`;
+  $('#authf').onsubmit = e => { e.preventDefault(); reg ? register(e.target) : login(e.target); };
+}
+const setErr = m => { $('#err').textContent = m; };
+
+async function register(f) {
+  const name = f.name.value.trim(), email = f.email.value.trim().toLowerCase(), pw = f.pw.value;
+  if (!name) return setErr('Indiquez votre nom.');
+  if (!/^\S+@\S+\.\S+$/.test(email)) return setErr('Adresse e-mail invalide.');
+  if (pw.length < 8) return setErr('Le mot de passe doit contenir au moins 8 caractères.');
+  const users = J('ff-users', {});
+  if (users[email]) return setErr('Un compte existe déjà avec cette adresse.');
+  try {
+    const s = salt();
+    users[email] = { name, email, salt: s, hash: await hash(pw, s), created: today() };
+    W('ff-users', users);
+    S.set('ff-session', email);
+    loadSession();
+    data.company.name = name; data.company.email = email; saveData();
+    go('dashboard');
+  } catch (e) { setErr('Impossible de créer le compte sur ce navigateur.'); }
+}
+
+async function login(f) {
+  const email = f.email.value.trim().toLowerCase(), pw = f.pw.value;
+  const u = J('ff-users', {})[email];
+  if (!u) return setErr('E-mail ou mot de passe incorrect.');
+  try {
+    if ((await hash(pw, u.salt)) !== u.hash) return setErr('E-mail ou mot de passe incorrect.');
+  } catch (e) { return setErr('Connexion impossible sur ce navigateur.'); }
+  S.set('ff-session', email);
+  loadSession();
+  go('dashboard');
+}
+
+function logout() {
+  S.del('ff-session'); me = null; data = null; go('login');
+}
+
+/* Coque de l'application */
+function renderApp(r) {
+  const nav = Object.entries(PAGES).map(([k, [i, l]]) =>
+    `<a href="#${k}" class="${r === k || (r === 'edit' && k === 'invoices') ? 'on' : ''}"><span>${i}</span>${l}</a>`).join('');
+  $('#root').innerHTML = `
+    <div class="app">
+      <aside class="side">
+        <div class="logo">FactureFacile</div>
+        <nav class="nav">${nav}</nav>
+        <div class="who"><div><b>${esc(me.name)}</b></div><div class="sub">${esc(me.email)}</div>
+          <button class="btn btn-s" data-a="logout" style="margin-top:10px;width:100%">Déconnexion</button></div>
+      </aside>
+      <section class="main" id="page"></section>
+    </div>`;
+  const pages = { dashboard: pDash, invoices: pInvoices, new: pNew, edit: pEdit, clients: pClients, account: pAccount };
+  pages[r]();
+}
+
+/* Tableau de bord */
+function pDash() {
+  let fac = 0, enc = 0, att = 0, ret = 0;
+  data.invoices.forEach(i => {
+    const t = totals(i).ttc; fac += t;
+    if (i.status === 'payee') enc += t;
+    else if (i.status !== 'brouillon') { att += t; if (stOf(i) === 'retard') ret += t; }
+  });
+  const months = [...Array(6)].map((_, k) => {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - (5 - k));
+    return { key: d.toISOString().slice(0, 7), label: d.toLocaleDateString('fr-FR', { month: 'short' }) };
+  });
+  const vals = months.map(m => data.invoices.filter(i => i.date.startsWith(m.key)).reduce((s, i) => s + totals(i).ttc, 0));
+  const max = Math.max(...vals, 1);
+  const chart = `<div style="display:flex;align-items:flex-end;gap:12px;height:200px">${months.map((m, k) => `
+    <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+      <div style="font-size:12px;color:var(--m)">${vals[k] ? Math.round(vals[k]).toLocaleString('fr-FR') + ' €' : ''}</div>
+      <div style="width:100%;max-width:56px;height:${vals[k] / max * 100}%;min-height:4px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,var(--p2),var(--p))"></div>
+      <div class="sub">${m.label}</div></div>`).join('')}</div>`;
+  const recent = [...data.invoices].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  $('#page').innerHTML = `
+    <div class="top"><div><h1>Bonjour ${esc(me.name.split(' ')[0])} 👋</h1><div class="sub">Voici l'état de votre activité.</div></div>
+      <a class="btn btn-p" href="#new">+ Nouvelle facture</a></div>
+    <div class="g4" style="margin-bottom:18px">${kpi('Total facturé', fac, '#6366f1')}${kpi('Encaissé', enc, '#10b981')}${kpi('En attente', att, '#f59e0b')}${kpi('En retard', ret, '#ef4444')}</div>
+    <div class="g2">
+      <div class="card"><h3 style="margin-bottom:16px">Facturé sur 6 mois</h3>${chart}</div>
+      <div class="card"><h3 style="margin-bottom:6px">Dernières factures</h3>
+        ${recent.length ? recent.map(i => `<div class="row"><div><b>${esc(i.client.name)}</b><div class="sub">${esc(i.number)} · ${fdate(i.date)}</div></div>
+          <div style="text-align:right"><div style="font-weight:600">${eur(totals(i).ttc)}</div>${badge(i)}</div></div>`).join('')
+          : '<div class="empty">Aucune facture pour l\'instant.</div>'}
+      </div>
+    </div>`;
+}
+
+/* Liste des factures */
+function pInvoices() {
+  $('#page').innerHTML = `
+    <div class="top"><div><h1>Factures</h1><div class="sub">${data.invoices.length} facture(s)</div></div>
+      <a class="btn btn-p" href="#new">+ Nouvelle facture</a></div>
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Rechercher (n°, client)…" style="max-width:300px">
+      <select id="fs" style="max-width:220px">
+        <option value="all">Tous les statuts</option><option value="brouillon">Brouillons</option>
+        <option value="envoyee">Envoyées</option><option value="retard">En retard</option><option value="payee">Payées</option>
+      </select>
+    </div>
+    <div class="tblw" id="tl"></div>`;
+  $('#q').oninput = drawInv; $('#fs').onchange = drawInv;
+  drawInv();
+}
+function drawInv() {
+  const q = $('#q').value.trim().toLowerCase(), f = $('#fs').value;
+  const rows = data.invoices
+    .filter(i => (!q || (i.number + ' ' + i.client.name).toLowerCase().includes(q)) && (f === 'all' || stOf(i) === f))
+    .sort((a, b) => b.date.localeCompare(a.date) || b.number.localeCompare(a.number));
+  $('#tl').innerHTML = rows.length ? `<table>
+    <thead><tr><th>N°</th><th>Client</th><th>Émise</th><th>Échéance</th><th style="text-align:right">Total TTC</th><th>Statut</th><th></th></tr></thead>
+    <tbody>${rows.map(i => `<tr>
+      <td><b>${esc(i.number)}</b></td><td>${esc(i.client.name)}</td><td>${fdate(i.date)}</td><td>${fdate(i.due)}</td>
+      <td style="text-align:right;font-weight:600">${eur(totals(i).ttc)}</td><td>${badge(i)}</td>
+      <td style="text-align:right"><button class="btn btn-s" data-a="view" data-id="${i.id}">Voir</button>
+      <button class="btn btn-s" data-a="edit" data-id="${i.id}">Modifier</button></td></tr>`).join('')}</tbody></table>`
+    : '<div class="empty">Aucune facture trouvée.</div>';
+}
+
+/* Création / modification */
+const blank = () => ({
+  id: uid(), isNew: true,
+  number: `FA-${new Date().getFullYear()}-${String(data.seq + 1).padStart(4, '0')}`,
+  date: today(), due: addDays(today(), 30), tva: 20, status: 'brouillon',
+  client: { name: '', email: '', address: '' }, lines: [{ desc: '', qty: 1, price: 0 }], notes: ''
+});
+function pNew() {
+  ed = blank();
+  if (preClient !== null && data.clients[preClient]) {
+    const c = data.clients[preClient];
+    ed.client = { name: c.name, email: c.email || '', address: c.address || '' };
+  }
+  preClient = null;
+  drawEditor();
+}
+function pEdit() {
+  const i = data.invoices.find(x => x.id === editId);
+  if (!i) return go('invoices');
+  ed = JSON.parse(JSON.stringify(i));
+  drawEditor();
+}
+function drawEditor() {
+  const c = ed.client;
+  $('#page').innerHTML = `
+    <div class="top"><div><h1>${ed.isNew ? 'Nouvelle facture' : 'Modifier ' + esc(ed.number)}</h1><div class="sub">Remplissez les informations puis enregistrez.</div></div>
+      <button class="btn" data-a="cancel">Annuler</button></div>
+    <div class="card">
+      <h3 style="margin-bottom:14px">Client</h3>
+      <div class="f"><label>Client enregistré</label>
+        <select id="clsel"><option value="">— Nouveau client —</option>
+          ${data.clients.map((x, k) => `<option value="${k}" ${x.name === c.name ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
+      <div class="g2">
+        <div class="f"><label>Nom *</label><input data-c="name" value="${esc(c.name)}"></div>
+        <div class="f"><label>E-mail</label><input data-c="email" type="email" value="${esc(c.email)}"></div>
+      </div>
+      <div class="f"><label>Adresse</label><textarea rows="2" data-c="address">${esc(c.address)}</textarea></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:14px">Facture</h3>
+      <div class="g4">
+        <div class="f"><label>N°</label><input data-f="number" value="${esc(ed.number)}"></div>
+        <div class="f"><label>Émission</label><input type="date" data-f="date" value="${ed.date}"></div>
+        <div class="f"><label>Échéance</label><input type="date" data-f="due" value="${ed.due}"></div>
+        <div class="f"><label>TVA</label><select data-f="tva">${[0, 5.5, 10, 20].map(v => `<option value="${v}" ${ed.tva == v ? 'selected' : ''}>${v} %</option>`).join('')}</select></div>
+      </div>
+      <div class="tblw"><table>
+        <thead><tr><th style="width:45%">Description</th><th>Qté</th><th>Prix HT (€)</th><th>Total HT</th><th></th></tr></thead>
+        <tbody>${ed.lines.map((l, k) => `<tr>
+          <td><input data-l="${k}" data-k="desc" value="${esc(l.desc)}"></td>
+          <td><input style="width:90px" type="number" min="0" step="any" data-l="${k}" data-k="qty" value="${l.qty}"></td>
+          <td><input style="width:130px" type="number" min="0" step="0.01" data-l="${k}" data-k="price" value="${l.price}"></td>
+          <td id="lt${k}" style="font-weight:600">${eur(round((+l.qty || 0) * (+l.price || 0)))}</td>
+          <td><button class="btn btn-s btn-d" data-a="rmline" data-i="${k}">✕</button></td></tr>`).join('')}</tbody>
+      </table></div>
+      <button class="btn btn-s" data-a="addline" style="margin-top:12px">+ Ajouter une prestation</button>
+      <div class="tot" id="tot"></div>
+      <div class="f" style="margin-top:18px"><label>Notes / conditions de paiement</label><textarea rows="2" data-f="notes">${esc(ed.notes)}</textarea></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap"><button class="btn" data-a="cancel">Annuler</button><button class="btn btn-p" data-a="saveinv">Enregistrer la facture</button></div>
+    </div>`;
+  totalsUI();
+}
+function totalsUI() {
+  const el = $('#tot'); if (!el) return;
+  const t = totals(ed);
+  el.innerHTML = `<div><span>Total HT</span><span>${eur(t.ht)}</span></div><div><span>TVA ${ed.tva} %</span><span>${eur(t.tva)}</span></div><div class="big"><span>Total TTC</span><span>${eur(t.ttc)}</span></div>`;
+}
+function onField(e) {
+  const t = e.target;
+  if (!ed) return;
+  if (t.id === 'clsel') {
+    if (e.type !== 'change') return;
+    const c = data.clients[+t.value];
+    ed.client = c ? { name: c.name, email: c.email || '', address: c.address || '' } : { name: '', email: '', address: '' };
+    return drawEditor();
+  }
+  if (t.dataset.c) { ed.client[t.dataset.c] = t.value; return; }
+  if (t.dataset.l !== undefined) {
+    const l = ed.lines[+t.dataset.l];
+    l[t.dataset.k] = t.dataset.k === 'desc' ? t.value : (parseFloat(t.value) || 0);
+    const el = $('#lt' + t.dataset.l);
+    if (el) el.textContent = eur(round((+l.qty || 0) * (+l.price || 0)));
+    return totalsUI();
+  }
+  if (t.dataset.f) { ed[t.dataset.f] = t.dataset.f === 'tva' ? parseFloat(t.value) : t.value; totalsUI(); }
+}
+document.addEventListener('input', onField);
+document.addEventListener('change', onField);
+
+function saveInvoice() {
+  if (!ed.client.name.trim()) return alert('Indiquez le nom du client.');
+  ed.client.name = ed.client.name.trim();
+  ed.lines = ed.lines.filter(l => l.desc.trim() || +l.price);
+  if (!ed.lines.length) return alert('Ajoutez au moins une prestation.');
+  const ci = data.clients.findIndex(c => c.name.toLowerCase() === ed.client.name.toLowerCase());
+  if (ci >= 0) data.clients[ci] = { ...data.clients[ci], email: ed.client.email, address: ed.client.address };
+  else data.clients.push({ id: uid(), ...ed.client });
+  const inv = { ...ed }; delete inv.isNew;
+  if (ed.isNew) { data.seq++; data.invoices.push(inv); }
+  else { const k = data.invoices.findIndex(i => i.id === inv.id); if (k >= 0) data.invoices[k] = inv; }
+  saveData(); ed = null; go('invoices');
+}
+
+/* Clients */
+function pClients() {
+  const rows = data.clients.map((c, k) => {
+    const its = data.invoices.filter(i => i.client.name === c.name);
+    return `<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.email)}</td><td>${its.length}</td>
+      <td style="text-align:right">${eur(its.reduce((s, i) => s + totals(i).ttc, 0))}</td>
+      <td style="text-align:right"><button class="btn btn-s" data-a="newfor" data-i="${k}">Facturer</button>
+      <button class="btn btn-s btn-d" data-a="cldel" data-i="${k}">Supprimer</button></td></tr>`;
+  }).join('');
+  $('#page').innerHTML = `
+    <div class="top"><div><h1>Clients</h1><div class="sub">${data.clients.length} client(s)</div></div></div>
+    <div class="card"><h3 style="margin-bottom:12px">Ajouter un client</h3>
+      <div class="g4"><input id="cn" placeholder="Nom *"><input id="ce" type="email" placeholder="E-mail"><input id="ca" placeholder="Adresse">
+      <button class="btn btn-p" data-a="cladd">Ajouter</button></div></div>
+    <div class="tblw">${data.clients.length ? `<table><thead><tr><th>Nom</th><th>E-mail</th><th>Factures</th><th style="text-align:right">Total TTC</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+      : '<div class="empty">Aucun client. Ajoutez-en un ci-dessus ou créez une facture.</div>'}</div>`;
+}
+
+/* Compte */
+function pAccount() {
+  const c = data.company;
+  $('#page').innerHTML = `
+    <div class="top"><div><h1>Mon compte</h1><div class="sub">Ces informations apparaissent sur vos factures.</div></div></div>
+    <div class="card"><h3 style="margin-bottom:14px">Entreprise</h3>
+      <div class="g2">
+        <div class="f"><label>Nom de l'entreprise</label><input data-co="name" value="${esc(c.name || me.name)}"></div>
+        <div class="f"><label>SIRET</label><input data-co="siret" value="${esc(c.siret)}"></div>
+      </div>
+      <div class="f"><label>Adresse</label><textarea rows="2" data-co="address">${esc(c.address)}</textarea></div>
+      <div class="g2">
+        <div class="f"><label>E-mail professionnel</label><input data-co="email" value="${esc(c.email || me.email)}"></div>
+        <div class="f"><label>IBAN (affiché sur les factures)</label><input data-co="iban" value="${esc(c.iban)}"></div>
+      </div>
+      <button class="btn btn-p" data-a="coSave">Enregistrer</button></div>
+    <div class="card"><h3 style="margin-bottom:14px">Mot de passe</h3>
+      <div class="g2"><input id="pw1" type="password" placeholder="Mot de passe actuel"><input id="pw2" type="password" placeholder="Nouveau (8 caractères min.)"></div>
+      <button class="btn" style="margin-top:12px" data-a="pwSave">Changer le mot de passe</button></div>
+    <div class="card" style="border-color:#fecaca"><h3 style="margin-bottom:6px;color:var(--bad)">Zone de danger</h3>
+      <p class="sub" style="margin:0 0 12px">Supprime votre compte et toutes vos données sur cet appareil.</p>
+      <button class="btn btn-d" data-a="accDel">Supprimer mon compte</button></div>`;
+}
+
+/* Fenêtre de facture */
+function openModal(html) { $('#mbody').innerHTML = html; $('#mbg').classList.remove('hidden'); }
+function closeModal() { $('#mbg').classList.add('hidden'); }
+function invView(id) {
+  const i = data.invoices.find(x => x.id === id);
+  if (!i) return;
+  const t = totals(i), c = data.company;
+  openModal(`
+    <div class="noprint" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:16px">
+      ${i.status === 'brouillon' ? `<button class="btn" data-a="st" data-id="${id}" data-s="envoyee">Marquer envoyée</button>` : ''}
+      ${i.status !== 'payee' ? `<button class="btn btn-p" data-a="st" data-id="${id}" data-s="payee">Marquer payée</button>` : ''}
+      <button class="btn" data-a="print">Imprimer / PDF</button>
+      <button class="btn" data-a="edit" data-id="${id}">Modifier</button>
+      <button class="btn btn-d" data-a="delinv" data-id="${id}">Supprimer</button>
+      <button class="btn" data-a="close">Fermer</button>
+    </div>
+    <div class="inv">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px">
+        <div><div style="font-size:22px;font-weight:800;color:#6366f1">${esc(c.name || 'Mon entreprise')}</div>
+          <div style="font-size:13px;color:#555;white-space:pre-line">${esc(c.address)}${c.siret ? '\nSIRET : ' + esc(c.siret) : ''}${c.email ? '\n' + esc(c.email) : ''}</div></div>
+        <div style="text-align:right"><div style="font-size:26px;font-weight:800">FACTURE</div><div>${esc(i.number)}</div>
+          <div style="font-size:13px;color:#555">Émise le ${fdate(i.date)}<br>Échéance : ${fdate(i.due)}</div></div>
+      </div>
+      <p style="margin:26px 0 18px"><b>Facturé à</b><br>${esc(i.client.name)}<br><span style="white-space:pre-line">${esc(i.client.address)}</span><br>${esc(i.client.email)}</p>
+      <table><thead><tr><th style="text-align:left">Description</th><th style="text-align:right">Qté</th><th style="text-align:right">Prix HT</th><th style="text-align:right">Total HT</th></tr></thead>
+        <tbody>${i.lines.map(l => `<tr><td>${esc(l.desc)}</td><td style="text-align:right">${l.qty}</td><td style="text-align:right">${eur(l.price)}</td><td style="text-align:right">${eur(round((+l.qty || 0) * (+l.price || 0)))}</td></tr>`).join('')}</tbody></table>
+      <div class="tot" style="color:#111"><div><span>Total HT</span><span>${eur(t.ht)}</span></div><div><span>TVA ${i.tva} %</span><span>${eur(t.tva)}</span></div><div class="big"><span>Total TTC</span><span>${eur(t.ttc)}</span></div></div>
+      ${i.notes ? `<p style="margin-top:24px;font-size:13px;white-space:pre-line"><b>Notes</b><br>${esc(i.notes)}</p>` : ''}
+      ${c.iban ? `<p style="font-size:13px;color:#555">IBAN : ${esc(c.iban)}</p>` : ''}
+    </div>`);
+}
+function setStatus(id, s) {
+  const i = data.invoices.find(x => x.id === id);
+  if (!i) return;
+  i.status = s; saveData(); render(); invView(id);
+}
+
+/* Actions (délégation) */
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-a]');
+  if (!b) return;
+  const a = b.dataset.a, id = b.dataset.id, idx = b.dataset.i;
+  if (a === 'view') return invView(id);
+  if (a === 'edit') { closeModal(); editId = id; return go('edit'); }
+  if (a === 'close') return closeModal();
+  if (a === 'print') return window.print();
+  if (a === 'st') return setStatus(id, b.dataset.s);
+  if (a === 'delinv') {
+    if (!confirm('Supprimer cette facture ?')) return;
+    data.invoices = data.invoices.filter(i => i.id !== id);
+    saveData(); closeModal(); return render();
+  }
+  if (a === 'logout') return logout();
+  if (a === 'cancel') { ed = null; return go('invoices'); }
+  if (a === 'addline') { ed.lines.push({ desc: '', qty: 1, price: 0 }); return drawEditor(); }
+  if (a === 'rmline') {
+    ed.lines.splice(+idx, 1);
+    if (!ed.lines.length) ed.lines.push({ desc: '', qty: 1, price: 0 });
+    return drawEditor();
+  }
+  if (a === 'saveinv') return saveInvoice();
+  if (a === 'newfor') { preClient = +idx; return go('new'); }
+  if (a === 'cladd') {
+    const n = $('#cn').value.trim();
+    if (!n) return alert('Indiquez le nom du client.');
+    data.clients.push({ id: uid(), name: n, email: $('#ce').value.trim(), address: $('#ca').value.trim() });
+    saveData(); return pClients();
+  }
+  if (a === 'cldel') {
+    if (!confirm('Supprimer ce client ? Ses factures sont conservées.')) return;
+    data.clients.splice(+idx, 1); saveData(); return pClients();
+  }
+  if (a === 'coSave') {
+    document.querySelectorAll('[data-co]').forEach(i => data.company[i.dataset.co] = i.value.trim());
+    saveData(); return alert('Informations enregistrées ✓');
+  }
+  if (a === 'pwSave') {
+    const cur = $('#pw1').value, nw = $('#pw2').value;
+    const users = J('ff-users', {}), u = users[me.email];
+    try {
+      if ((await hash(cur, u.salt)) !== u.hash) return alert('Mot de passe actuel incorrect.');
+    } catch (err) { return alert('Action impossible sur ce navigateur.'); }
+    if (nw.length < 8) return alert('Le nouveau mot de passe doit contenir au moins 8 caractères.');
+    const s = salt();
+    u.salt = s; u.hash = await hash(nw, s);
+    users[me.email] = u; W('ff-users', users); me = u;
+    $('#pw1').value = ''; $('#pw2').value = '';
+    return alert('Mot de passe modifié ✓');
+  }
+  if (a === 'accDel') {
+    if (!confirm('Supprimer définitivement votre compte et toutes vos données ?')) return;
+    const users = J('ff-users', {});
+    delete users[me.email]; W('ff-users', users);
+    S.del('ff-data:' + me.email);
+    return logout();
+  }
+});
+
+$('#mbg').addEventListener('click', e => { if (e.target.id === 'mbg') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+loadSession();
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
